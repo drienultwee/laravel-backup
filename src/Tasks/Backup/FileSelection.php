@@ -3,6 +3,7 @@
 namespace Spatie\Backup\Tasks\Backup;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Symfony\Component\Finder\Finder;
 
@@ -19,6 +20,9 @@ class FileSelection
 
     /** @var bool */
     protected $shouldIgnoreUnreadableDirs = false;
+
+    /** @var int */
+    protected $modifiedSecondsAgo;
 
     /**
      * @param array|string $includeFilesAndDirectories
@@ -50,6 +54,17 @@ class FileSelection
     public function excludeFilesFrom($excludeFilesAndDirectories): self
     {
         $this->excludeFilesAndDirectories = $this->excludeFilesAndDirectories->merge($this->sanitize($excludeFilesAndDirectories));
+
+        return $this;
+    }
+
+    /**
+     * @param int | null $seconds
+     * @return $this
+     */
+    public function filesModifiedSecondsAgo($seconds)
+    {
+        $this->modifiedSecondsAgo = $seconds;
 
         return $this;
     }
@@ -90,6 +105,10 @@ class FileSelection
 
         if ($this->shouldFollowLinks) {
             $finder->followLinks();
+        }
+
+        if($this->modifiedSecondsAgo) {
+            $finder->date('>= '. Carbon::now()->subSeconds($this->modifiedSecondsAgo)->format('Y-m-d H:i:s'));
         }
 
         if ($this->shouldIgnoreUnreadableDirs) {

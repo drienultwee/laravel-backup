@@ -15,6 +15,11 @@ return [
             'files' => [
 
                 /*
+                 *  set to null for everything
+                 */
+                'modified_seconds_ago' => null, //no carbon here to prevent cached carbon instance,
+
+                /*
                  * The list of directories and files that will be included in the backup.
                  */
                 'include' => [
