@@ -6,6 +6,7 @@ use Generator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Symfony\Component\Finder\Finder;
+use Illuminate\Support\Carbon;
 
 class FileSelection
 {
@@ -16,6 +17,8 @@ class FileSelection
     protected bool $shouldFollowLinks = false;
 
     protected bool $shouldIgnoreUnreadableDirs = false;
+
+    protected int $modifiedSecondsAgo;
 
     public static function create(array | string $includeFilesAndDirectories = []): self
     {
@@ -32,6 +35,13 @@ class FileSelection
     public function excludeFilesFrom(array | string $excludeFilesAndDirectories): self
     {
         $this->excludeFilesAndDirectories = $this->excludeFilesAndDirectories->merge($this->sanitize($excludeFilesAndDirectories));
+
+        return $this;
+    }
+
+    public function filesModifiedSecondsAgo(int $seconds)
+    {
+        $this->modifiedSecondsAgo = $seconds;
 
         return $this;
     }
@@ -62,6 +72,10 @@ class FileSelection
 
         if ($this->shouldFollowLinks) {
             $finder->followLinks();
+        }
+
+        if($this->modifiedSecondsAgo) {
+            $finder->date('>= '. Carbon::now()->subSeconds($this->modifiedSecondsAgo)->format('Y-m-d H:i:s'));
         }
 
         if ($this->shouldIgnoreUnreadableDirs) {

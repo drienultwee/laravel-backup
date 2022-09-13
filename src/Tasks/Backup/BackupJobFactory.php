@@ -20,6 +20,7 @@ class BackupJobFactory
     {
         return FileSelection::create($sourceFiles['include'])
             ->excludeFilesFrom($sourceFiles['exclude'])
+            ->filesModifiedSecondsAgo(isset($sourceFiles['modified_seconds_ago']) ? $sourceFiles['modified_seconds_ago'] : null)
             ->shouldFollowLinks(isset($sourceFiles['follow_links']) && $sourceFiles['follow_links'])
             ->shouldIgnoreUnreadableDirs(Arr::get($sourceFiles, 'ignore_unreadable_directories', false));
     }
