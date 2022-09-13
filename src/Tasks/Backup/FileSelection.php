@@ -18,7 +18,7 @@ class FileSelection
 
     protected bool $shouldIgnoreUnreadableDirs = false;
 
-    protected int $modifiedSecondsAgo;
+    protected ?int $modifiedSecondsAgo;
 
     public static function create(array | string $includeFilesAndDirectories = []): self
     {
@@ -39,7 +39,7 @@ class FileSelection
         return $this;
     }
 
-    public function filesModifiedSecondsAgo(int $seconds)
+    public function filesModifiedSecondsAgo(?int $seconds)
     {
         $this->modifiedSecondsAgo = $seconds;
 
